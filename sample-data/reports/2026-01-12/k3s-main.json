@@ -1,0 +1,50 @@
+{
+  "hostname": "k3s-main",
+  "os_distribution": "Ubuntu",
+  "os_version": "22.04",
+  "kernel": "5.15.0-100-generic",
+  "scan_time": "2026-01-12T03:00:04Z",
+  "package_count": 8,
+  "packages": [
+    {
+      "name": "apparmor",
+      "version": "3.0.4-2ubuntu2.3",
+      "source": "apt"
+    },
+    {
+      "name": "bash",
+      "version": "5.1-6ubuntu1.1",
+      "source": "apt"
+    },
+    {
+      "name": "ca-certificates",
+      "version": "20230311ubuntu0.22.04.1",
+      "source": "apt"
+    },
+    {
+      "name": "curl",
+      "version": "7.81.0-1ubuntu1.15",
+      "source": "apt"
+    },
+    {
+      "name": "openssh-server",
+      "version": "1:8.9p1-3ubuntu0.6",
+      "source": "apt"
+    },
+    {
+      "name": "openssl",
+      "version": "3.0.2-0ubuntu1.15",
+      "source": "apt"
+    },
+    {
+      "name": "sudo",
+      "version": "1.9.9-1ubuntu2.4",
+      "source": "apt"
+    },
+    {
+      "name": "systemd",
+      "version": "249.11-0ubuntu3.12",
+      "source": "apt"
+    }
+  ]
+}

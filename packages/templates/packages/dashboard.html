@@ -1,0 +1,57 @@
+{% extends "packages/base.html" %}
+{% block title %}Dashboard - Package Audit{% endblock %}
+{% block content %}
+<h1>Package Audit Dashboard</h1>
+
+<div class="stats">
+    <div class="stat">
+        <div class="stat-value">{{ host_count }}</div>
+        <div class="stat-label">Hosts</div>
+    </div>
+    <div class="stat">
+        <div class="stat-value">{{ dates|length }}</div>
+        <div class="stat-label">Scan Dates</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Hosts</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Hostname</th>
+                <th>OS</th>
+                <th>Packages</th>
+                <th>Last Scan</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for host in hosts %}
+            <tr>
+                <td><a href="/host/{{ host.hostname }}/">{{ host.hostname }}</a></td>
+                <td>{{ host.os_distribution }} {{ host.os_version }}</td>
+                <td>{{ host.package_count }}</td>
+                <td class="muted">{{ host.scan_time|slice:":19" }}</td>
+                <td>
+                    <a href="/host/{{ host.hostname }}/" class="btn btn-secondary">View</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No hosts found. Run the package audit playbook first.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if dates %}
+<div class="card">
+    <h2>Available Scan Dates</h2>
+    <p>
+        {% for date in dates %}
+        <span class="badge badge-green">{{ date }}</span>
+        {% endfor %}
+    </p>
+</div>
+{% endif %}
+{% endblock %}

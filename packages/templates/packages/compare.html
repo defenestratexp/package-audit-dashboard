@@ -1,0 +1,124 @@
+{% extends "packages/base.html" %}
+{% block title %}Compare Hosts - Package Audit{% endblock %}
+{% block content %}
+<h1>Compare Hosts</h1>
+
+<div class="card">
+    <form method="get">
+        <div class="form-group">
+            <label>Host 1:</label>
+            <select name="host1">
+                <option value="">Select host...</option>
+                {% for h in hosts %}
+                <option value="{{ h.hostname }}" {% if h.hostname == host1 %}selected{% endif %}>{{ h.hostname }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Host 2:</label>
+            <select name="host2">
+                <option value="">Select host...</option>
+                {% for h in hosts %}
+                <option value="{{ h.hostname }}" {% if h.hostname == host2 %}selected{% endif %}>{{ h.hostname }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn">Compare</button>
+    </form>
+</div>
+
+{% if comparison %}
+{% if comparison.error %}
+<div class="card">
+    <p style="color: #e74c3c;">{{ comparison.error }}</p>
+</div>
+{% else %}
+<div class="stats">
+    <div class="stat" style="background: #e74c3c;">
+        <div class="stat-value">{{ comparison.only_in_host1|length }}</div>
+        <div class="stat-label">Only in {{ comparison.host1 }}</div>
+    </div>
+    <div class="stat" style="background: #e74c3c;">
+        <div class="stat-value">{{ comparison.only_in_host2|length }}</div>
+        <div class="stat-label">Only in {{ comparison.host2 }}</div>
+    </div>
+    <div class="stat" style="background: #f39c12;">
+        <div class="stat-value">{{ comparison.version_diff|length }}</div>
+        <div class="stat-label">Version Differences</div>
+    </div>
+    <div class="stat" style="background: #27ae60;">
+        <div class="stat-value">{{ comparison.common_count }}</div>
+        <div class="stat-label">Common Packages</div>
+    </div>
+</div>
+
+{% if comparison.version_diff %}
+<div class="card">
+    <h2>Version Differences</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Package</th>
+                <th>{{ comparison.host1 }}</th>
+                <th>{{ comparison.host2 }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pkg in comparison.version_diff %}
+            <tr>
+                <td>{{ pkg.name }}</td>
+                <td><span class="badge badge-yellow">{{ pkg.version1 }}</span></td>
+                <td><span class="badge badge-yellow">{{ pkg.version2 }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if comparison.only_in_host1 %}
+<div class="card">
+    <h2>Only in {{ comparison.host1 }} ({{ comparison.only_in_host1|length }})</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Package</th>
+                <th>Version</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pkg in comparison.only_in_host1 %}
+            <tr>
+                <td>{{ pkg.name }}</td>
+                <td>{{ pkg.version }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if comparison.only_in_host2 %}
+<div class="card">
+    <h2>Only in {{ comparison.host2 }} ({{ comparison.only_in_host2|length }})</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Package</th>
+                <th>Version</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pkg in comparison.only_in_host2 %}
+            <tr>
+                <td>{{ pkg.name }}</td>
+                <td>{{ pkg.version }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endif %}
+{% endif %}
+{% endblock %}

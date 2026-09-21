@@ -1,0 +1,99 @@
+{% extends "packages/base.html" %}
+{% load package_filters %}
+{% block title %}Security Packages - Package Audit{% endblock %}
+{% block content %}
+<h1>Security Packages</h1>
+
+<div class="stats">
+    <div class="stat">
+        <div class="stat-value">{{ total_packages }}</div>
+        <div class="stat-label">Tracked Packages</div>
+    </div>
+    <div class="stat">
+        <div class="stat-value">{{ host_count }}</div>
+        <div class="stat-label">Hosts</div>
+    </div>
+    <div class="stat">
+        <div class="stat-value{% if total_inconsistencies > 0 %}" style="color: #e74c3c{% endif %}">{{ total_inconsistencies }}</div>
+        <div class="stat-label">Version Inconsistencies</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Security Package Matrix</h2>
+    <p class="muted">Packages sorted by inconsistencies first. Yellow = version mismatch across hosts. Gray = not installed on host.</p>
+
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Package</th>
+                    <th>Installed</th>
+                    {% for host in host_names %}
+                    <th style="writing-mode: vertical-rl; text-orientation: mixed; max-width: 40px;">{{ host }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for pkg in security_data %}
+                <tr{% if pkg.has_inconsistency %} style="background-color: #fff3cd;"{% endif %}>
+                    <td>
+                        <strong>{{ pkg.name }}</strong>
+                        {% if pkg.has_inconsistency %}
+                        <span class="badge badge-yellow" title="Multiple versions detected">!</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ pkg.installed_count }}/{{ host_count }}</td>
+                    {% for host in host_names %}
+                    <td style="font-size: 0.85em; white-space: nowrap;">
+                        {% if host in pkg.versions %}
+                        <span title="{{ pkg.versions|get_item:host }}">{{ pkg.versions|get_item:host|truncatechars:20 }}</span>
+                        {% else %}
+                        <span class="muted" title="Not installed">-</span>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% empty %}
+                <tr><td colspan="{{ host_count|add:2 }}">No security packages tracked.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if total_inconsistencies > 0 %}
+<div class="card">
+    <h2>Version Inconsistencies</h2>
+    <p>The following packages have different versions across hosts:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Package</th>
+                <th>Versions Found</th>
+                <th>Hosts</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pkg in security_data %}
+            {% if pkg.has_inconsistency %}
+            <tr>
+                <td><strong>{{ pkg.name }}</strong></td>
+                <td>
+                    {% for version in pkg.unique_versions %}
+                    <span class="badge badge-yellow">{{ version|truncatechars:30 }}</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for host, version in pkg.versions.items %}
+                    <span class="badge badge-green" title="{{ version }}">{{ host }}</span>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

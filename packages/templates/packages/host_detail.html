@@ -1,0 +1,72 @@
+{% extends "packages/base.html" %}
+{% block title %}{{ hostname }} - Package Audit{% endblock %}
+{% block content %}
+<h1>{{ hostname }}</h1>
+
+<div class="card">
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-value">{{ report.package_count }}</div>
+            <div class="stat-label">Packages</div>
+        </div>
+        <div class="stat" style="background: #27ae60;">
+            <div class="stat-value">{{ report.os_distribution }}</div>
+            <div class="stat-label">{{ report.os_version }}</div>
+        </div>
+    </div>
+    <p class="muted" style="margin-top: 15px;">
+        Kernel: {{ report.kernel }}<br>
+        Last scan: {{ report.scan_time }}
+    </p>
+</div>
+
+{% if dates %}
+<div class="card">
+    <form method="get">
+        <label>View historical data:</label>
+        <select name="date" onchange="this.form.submit()">
+            <option value="">Latest</option>
+            {% for date in dates %}
+            <option value="{{ date }}" {% if date == selected_date %}selected{% endif %}>{{ date }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+{% endif %}
+
+<div class="card">
+    <h2>Installed Packages</h2>
+    <div class="search-box">
+        <input type="text" id="filterInput" placeholder="Filter packages..." onkeyup="filterTable()">
+    </div>
+    <table id="packagesTable">
+        <thead>
+            <tr>
+                <th>Package Name</th>
+                <th>Version</th>
+                <th>Source</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pkg in packages %}
+            <tr>
+                <td>{{ pkg.name }}</td>
+                <td>{{ pkg.version }}</td>
+                <td><span class="badge badge-green">{{ pkg.source }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function filterTable() {
+    const filter = document.getElementById("filterInput").value.toLowerCase();
+    const rows = document.querySelectorAll("#packagesTable tbody tr");
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+}
+</script>
+{% endblock %}

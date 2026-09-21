@@ -1,0 +1,5 @@
+.env
+sample-data/
+k8s/
+.git/
+__pycache__/

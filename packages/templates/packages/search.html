@@ -1,0 +1,42 @@
+{% extends "packages/base.html" %}
+{% block title %}Search - Package Audit{% endblock %}
+{% block content %}
+<h1>Search Packages</h1>
+
+<div class="card">
+    <form method="get" class="search-box">
+        <input type="text" name="q" value="{{ query }}" placeholder="Enter package name..." autofocus>
+        <button type="submit" class="btn">Search</button>
+    </form>
+</div>
+
+{% if query %}
+<div class="card">
+    <h2>Results for "{{ query }}" ({{ result_count }} found)</h2>
+    {% if results %}
+    <table>
+        <thead>
+            <tr>
+                <th>Host</th>
+                <th>Package Name</th>
+                <th>Version</th>
+                <th>Source</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in results %}
+            <tr>
+                <td><a href="/host/{{ r.hostname }}/">{{ r.hostname }}</a></td>
+                <td>{{ r.name }}</td>
+                <td>{{ r.version }}</td>
+                <td><span class="badge badge-green">{{ r.source }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No packages found matching "{{ query }}".</p>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

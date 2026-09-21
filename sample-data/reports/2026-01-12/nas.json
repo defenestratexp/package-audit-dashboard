@@ -1,0 +1,50 @@
+{
+  "hostname": "nas",
+  "os_distribution": "Debian",
+  "os_version": "12",
+  "kernel": "6.1.0-18-amd64",
+  "scan_time": "2026-01-12T03:00:09Z",
+  "package_count": 8,
+  "packages": [
+    {
+      "name": "bash",
+      "version": "5.2.15-2+b2",
+      "source": "apt"
+    },
+    {
+      "name": "ca-certificates",
+      "version": "20230311",
+      "source": "apt"
+    },
+    {
+      "name": "curl",
+      "version": "7.88.1-10+deb12u5",
+      "source": "apt"
+    },
+    {
+      "name": "nfs-kernel-server",
+      "version": "1:2.6.2-4",
+      "source": "apt"
+    },
+    {
+      "name": "openssh-server",
+      "version": "1:9.2p1-2+deb12u2",
+      "source": "apt"
+    },
+    {
+      "name": "openssl",
+      "version": "3.0.11-1~deb12u2",
+      "source": "apt"
+    },
+    {
+      "name": "sudo",
+      "version": "1.9.13p3-1+deb12u1",
+      "source": "apt"
+    },
+    {
+      "name": "systemd",
+      "version": "252.22-1~deb12u1",
+      "source": "apt"
+    }
+  ]
+}

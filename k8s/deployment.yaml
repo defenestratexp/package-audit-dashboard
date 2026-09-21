@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: package-audit
+  namespace: audit-system
+  labels:
+    app: package-audit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: package-audit
+  template:
+    metadata:
+      labels:
+        app: package-audit
+    spec:
+      imagePullSecrets:
+      - name: ecr-registry-key
+      containers:
+      - name: package-audit
+        image: 123456789012.dkr.ecr.us-west-2.amazonaws.com/package-audit-dashboard:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DJANGO_DEBUG
+          value: "false"
+        - name: DJANGO_ALLOWED_HOSTS
+          value: "*"
+        - name: DJANGO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: package-audit-secrets
+              key: django-secret-key
+        - name: STORAGE_TYPE
+          value: "local"
+        - name: LOCAL_DATA_PATH
+          value: "/data"
+        volumeMounts:
+        - name: packages-data
+          mountPath: /data
+          readOnly: true
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /health/
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health/
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: packages-data
+        persistentVolumeClaim:
+          claimName: package-audit-packages-pvc
