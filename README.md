@@ -12,18 +12,12 @@ are placeholders. `sample-data/` is synthetic.
 
 ## Architecture
 
-```
- inventory job (per host, daily)             package-audit-dashboard (Django, no DB)
- ─────────────────────────────                ──────────────────────────────────────
- dpkg-query / rpm -qa ...  ──► <store>/latest/<host>.json           /            hosts, OS, package counts, scan dates
-                          └─► <store>/reports/<YYYY-MM-DD>/<host>.json
-                                     ▲                               /host/<h>/   packages, ?date=<YYYY-MM-DD> history
-   <store> = s3://<bucket>  (STORAGE_TYPE=s3)                       /search/?q=  substring match across hosts
-           | a directory    (STORAGE_TYPE=local, e.g. NFS PVC)      /compare/    only-in-A / only-in-B / version diffs
-                                                                    /security/   matrix of ~30 security packages
-                                                                    /api/hosts/, /api/host/<h>/   JSON
-                                                                    /health/     probe
-```
+![Architecture: hosts feed a daily inventory job that writes per-host JSON to S3 or NFS; the Django dashboard reads it for search, host diff and security drift](docs/diagrams/architecture.png)
+
+Routes: `/` (hosts, OS, package counts, scan dates), `/host/<h>/` (packages,
+`?date=<YYYY-MM-DD>` history), `/search/?q=` (substring match across hosts),
+`/compare/` (only-in-A, only-in-B, version diffs), `/security/` (matrix of ~30
+security packages), `/api/hosts/` and `/api/host/<h>/` (JSON), and `/health/`.
 
 Report format (one file per host):
 

@@ -1,0 +1,34 @@
+direction: down
+
+hosts: "Fleet hosts" {
+  grid-columns: 1
+  a: "host A"
+  b: "host B"
+  c: "host ..."
+}
+
+job: "inventory job (daily, not in this repo)\ndpkg-query / rpm -qa\none JSON report per host"
+
+store: "Report store" {
+  grid-columns: 1
+  s3: "S3 bucket\n(STORAGE_TYPE=s3)" {shape: cylinder}
+  nfs: "directory, e.g. NFS volume\n(STORAGE_TYPE=local)" {shape: cylinder}
+  layout: "latest/<host>.json\nreports/<YYYY-MM-DD>/<host>.json"
+}
+
+app: "package-audit-dashboard (Django, read-only, no database)" {
+  grid-columns: 2
+  dash: "/\nhosts, OS, package counts, scan dates"
+  host: "/host/<h>/\npackages, ?date= history"
+  search: "/search/\npackage across the fleet"
+  compare: "/compare/\nhost diff: only in A, only in B,\nversion differences"
+  sec: "/security/\n~30 security packages,\nversion drift matrix"
+  api: "/api/hosts/, /api/host/<h>/\nJSON"
+}
+
+user: "operator" {shape: person}
+
+hosts -> job: "package lists"
+job -> store: "write JSON"
+store -> app: "storage.py\n(same interface for both backends)"
+user -> app: "browse"
